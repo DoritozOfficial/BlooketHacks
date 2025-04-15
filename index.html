@@ -52,6 +52,11 @@
       overflow-x: auto;
       border: 1px solid #0f0;
     }
+    input, button {
+      font-size: 1.2em;
+      margin: 10px;
+      padding: 10px;
+    }
   </style>
 </head>
 <body>
@@ -59,6 +64,13 @@
   <p class="warning">
     ⚠️ This website is for <strong>educational purposes only</strong>. No real accounts are modified. Scripts are for learning and analysis. Learn responsibly. ⚠️
   </p>
+
+  <!-- Lobby Join Inputs -->
+  <div>
+    <input type="text" id="gameCode" placeholder="Enter Game Code" />
+    <input type="text" id="nickname" placeholder="Enter Your Nickname" />
+    <button onclick="joinLobby()">Join Lobby</button>
+  </div>
 
   <div class="button-container">
     <button onclick="loadScript('addTokens')">Load: Add Tokens Script</button>
@@ -68,5 +80,38 @@
   <pre id="scriptDisplay">// Script code will appear here for study...</pre>
 
   <script src="hacks.js"></script>
+  <script>
+    // Function to join a Blooket lobby
+    function joinLobby() {
+      const gameCode = document.getElementById('gameCode').value;
+      const nickname = document.getElementById('nickname').value;
+
+      if (!gameCode || !nickname) {
+        alert('Please enter both Game Code and Nickname.');
+        return;
+      }
+
+      // Example WebSocket URL for joining a Blooket game
+      const socket = new WebSocket(`wss://blooket.com/socket.io/?EIO=4&transport=websocket`);
+      
+      socket.onopen = () => {
+        socket.send(JSON.stringify({
+          type: "join",
+          gameCode: gameCode,
+          nickname: nickname
+        }));
+        alert(`Joining Lobby ${gameCode} as ${nickname}...`);
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data); // Monitor WebSocket messages for game actions
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error: ", error);
+      };
+    }
+  </script>
 </body>
 </html>
